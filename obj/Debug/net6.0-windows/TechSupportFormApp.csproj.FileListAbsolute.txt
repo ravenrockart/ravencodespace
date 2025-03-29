@@ -1,5 +1,0 @@
-/workspaces/ravencodespace/obj/Debug/net6.0-windows/TechSupportFormApp.GeneratedMSBuildEditorConfig.editorconfig
-/workspaces/ravencodespace/obj/Debug/net6.0-windows/TechSupportFormApp.AssemblyInfoInputs.cache
-/workspaces/ravencodespace/obj/Debug/net6.0-windows/TechSupportFormApp.AssemblyInfo.cs
-/workspaces/ravencodespace/obj/Debug/net6.0-windows/TechSupportFormApp.csproj.CoreCompileInputs.cache
-/workspaces/ravencodespace/obj/Debug/net6.0-windows/TechSupportFormApp.sourcelink.json

@@ -33,6 +33,12 @@ namespace TechSupportFormApp
         private void btnSave_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=YOUR_SERVER;Database=YOUR_DB;Trusted_Connection=True;";
+            if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                MessageBox.Show("Please fill in all required fields.");
+                return;
+            }
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -75,6 +81,10 @@ namespace TechSupportFormApp
                     MessageBox.Show("Case and part orders saved successfully.");
                     ClearForm();
                 }
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show($"Database error: {sqlEx.Message}");
             }
             catch (Exception ex)
             {

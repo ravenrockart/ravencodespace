@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -34,45 +33,52 @@ namespace TechSupportFormApp
         private void btnSave_Click(object sender, EventArgs e)
         {
             string connectionString = "Server=YOUR_SERVER;Database=YOUR_DB;Trusted_Connection=True;";
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
-
-                string insertCaseQuery = @"
-                    INSERT INTO TechSupportCase 
-                    (CustomerName, Email, Phone, CaseDate, WorkOrderNumber, ReasonForCall, AnswerGiven, ContractID, ContractExpiry, CoverageDetails) 
-                    OUTPUT INSERTED.CaseID
-                    VALUES (@name, @mail, @phone, @date, @work, @reason, @answer, @contract, @expiry, @coverage)";
-
-                SqlCommand caseCmd = new SqlCommand(insertCaseQuery, conn);
-                caseCmd.Parameters.AddWithValue("@name", txtName.Text);
-                caseCmd.Parameters.AddWithValue("@mail", txtEmail.Text);
-                caseCmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                caseCmd.Parameters.AddWithValue("@date", dtCaseDate.Value);
-                caseCmd.Parameters.AddWithValue("@work", txtWorkOrder.Text);
-                caseCmd.Parameters.AddWithValue("@reason", txtReason.Text);
-                caseCmd.Parameters.AddWithValue("@answer", txtAnswer.Text);
-                caseCmd.Parameters.AddWithValue("@contract", txtContractID.Text);
-                caseCmd.Parameters.AddWithValue("@expiry", dtExpiry.Value);
-                caseCmd.Parameters.AddWithValue("@coverage", txtCoverage.Text);
-
-                int caseID = (int)caseCmd.ExecuteScalar();
-
-                foreach (var part in partOrders)
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    string insertPartQuery = @"
-                        INSERT INTO PartOrder (CaseID, PartNumber, Quantity, Status) 
-                        VALUES (@caseID, @part, @qty, @status)";
-                    SqlCommand partCmd = new SqlCommand(insertPartQuery, conn);
-                    partCmd.Parameters.AddWithValue("@caseID", caseID);
-                    partCmd.Parameters.AddWithValue("@part", part.PartNumber);
-                    partCmd.Parameters.AddWithValue("@qty", part.Quantity);
-                    partCmd.Parameters.AddWithValue("@status", part.Status);
-                    partCmd.ExecuteNonQuery();
-                }
+                    conn.Open();
 
-                MessageBox.Show("Case and part orders saved successfully.");
-                ClearForm();
+                    string insertCaseQuery = @"
+                        INSERT INTO TechSupportCase 
+                        (CustomerName, Email, Phone, CaseDate, WorkOrderNumber, ReasonForCall, AnswerGiven, ContractID, ContractExpiry, CoverageDetails) 
+                        OUTPUT INSERTED.CaseID
+                        VALUES (@name, @mail, @phone, @date, @work, @reason, @answer, @contract, @expiry, @coverage)";
+
+                    SqlCommand caseCmd = new SqlCommand(insertCaseQuery, conn);
+                    caseCmd.Parameters.Add("@name", System.Data.SqlDbType.NVarChar).Value = txtName.Text;
+                    caseCmd.Parameters.Add("@mail", System.Data.SqlDbType.NVarChar).Value = txtEmail.Text;
+                    caseCmd.Parameters.Add("@phone", System.Data.SqlDbType.NVarChar).Value = txtPhone.Text;
+                    caseCmd.Parameters.Add("@date", System.Data.SqlDbType.DateTime).Value = dtCaseDate.Value;
+                    caseCmd.Parameters.Add("@work", System.Data.SqlDbType.NVarChar).Value = txtWorkOrder.Text;
+                    caseCmd.Parameters.Add("@reason", System.Data.SqlDbType.NVarChar).Value = txtReason.Text;
+                    caseCmd.Parameters.Add("@answer", System.Data.SqlDbType.NVarChar).Value = txtAnswer.Text;
+                    caseCmd.Parameters.Add("@contract", System.Data.SqlDbType.NVarChar).Value = txtContractID.Text;
+                    caseCmd.Parameters.Add("@expiry", System.Data.SqlDbType.DateTime).Value = dtExpiry.Value;
+                    caseCmd.Parameters.Add("@coverage", System.Data.SqlDbType.NVarChar).Value = txtCoverage.Text;
+
+                    int caseID = (int)caseCmd.ExecuteScalar();
+
+                    foreach (var part in partOrders)
+                    {
+                        string insertPartQuery = @"
+                            INSERT INTO PartOrder (CaseID, PartNumber, Quantity, Status) 
+                            VALUES (@caseID, @part, @qty, @status)";
+                        SqlCommand partCmd = new SqlCommand(insertPartQuery, conn);
+                        partCmd.Parameters.Add("@caseID", System.Data.SqlDbType.Int).Value = caseID;
+                        partCmd.Parameters.Add("@part", System.Data.SqlDbType.NVarChar).Value = part.PartNumber;
+                        partCmd.Parameters.Add("@qty", System.Data.SqlDbType.Int).Value = part.Quantity;
+                        partCmd.Parameters.Add("@status", System.Data.SqlDbType.NVarChar).Value = part.Status;
+                        partCmd.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show("Case and part orders saved successfully.");
+                    ClearForm();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
 
